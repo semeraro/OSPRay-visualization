@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# CMake and build Stuff
+CMakeFiles/
+build/
+.vscode/
+Makefile
+CMakeCache.txt
+*.swp
