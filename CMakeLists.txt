@@ -3,7 +3,7 @@
 ## from here in the src directory. The build directory is ../build
 
 cmake_minimum_required(VERSION 3.1)
-
+cmake_policy(SET CMP0074 NEW)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -19,8 +19,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
-find_package(rkcommon REQUIRED)
-
 find_package(ospray REQUIRED)
-
+find_package(rkcommon REQUIRED)
 add_subdirectory(src)
