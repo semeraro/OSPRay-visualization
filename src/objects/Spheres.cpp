@@ -48,10 +48,11 @@ int main(int argc, const char** argv) {
         vec3f(-1.0f,-1.0f, 1.0f),
         vec3f(-1.0f,-1.0f, -1.0f)};
     // Default sphere radius
+    float radius = 0.55f;
+    // or set radius of individual spheres
     std::vector<float> radi = {
-        0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1
+        0.1,0.12,0.13,0.14,0.15,0.16,0.17,0.18
     };
-    float radius = 1.25f;
 #ifdef _WIN32
     bool waitForKey = false;
     CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -78,12 +79,20 @@ int main(int argc, const char** argv) {
         camera.commit(); // commit each object to indicate modifications are done
 
         // create and setup model and shperes
+        // create a geometry object to contain the spheres. As yet no sphere count.
         ospray::cpp::Geometry Spheres("sphere");
+        // set the position of the spheres
         Spheres.setParam("sphere.position", ospray::cpp::CopiedData(position));
+        // set the default radius of the spheres
+        // all the spheres will be this radius if no individual
+        // radius is specified.
+        Spheres.setParam("radius", radius);
+        // if uncommented the next line sets the individual radius of 
+        // each sphere. Overrides the default radius.
         Spheres.setParam("sphere.radius", ospray::cpp::CopiedData(radi));
         Spheres.commit();
 
-        // put the mesh into a model
+        // put the spheres into a model
         ospray::cpp::GeometricModel model(Spheres);
         model.commit();
 
@@ -99,7 +108,7 @@ int main(int argc, const char** argv) {
         // put the instance in the world
         ospray::cpp::World world;
         world.setParam("instance", ospray::cpp::CopiedData(instance));
-        // create and setup light for Ambient Occlusion
+        // create and setup light. No light no image. 
         ospray::cpp::Light light("ambient");
         light.commit();
 
@@ -109,9 +118,11 @@ int main(int argc, const char** argv) {
          // create renderer, choose Scientific Visualization renderer
         ospray::cpp::Renderer renderer("scivis");
 
-        // complete setup of renderer
-        renderer.setParam("aoSamples", 1);
-        //renderer.setParam("backgroundColor", 0.0f); // white, transparent
+        // complete setup of renderer, place setParam calls here
+        // to change rendering.
+        // Change the background color as an example. Spec rgb as vec3f.
+        vec3f lightgray{0.1f,0.1f,0.1f};
+        renderer.setParam("backgroundColor", lightgray); // 
         renderer.commit();
 
         // create and setup framebuffer
