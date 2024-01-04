@@ -26,8 +26,11 @@ The applications write ppm files. I convert the files to png using gimp for conv
 ### Hello
 This C++ example is the osptutorial example from the OSPRay distro. I used this 
 example to set up my development environment. The basic sturcute of the CMake files was developed based on this example. This example renders two triangles with ambient occlusion turned on. It demonstrates the use of the mesh geometry with vertex colors assigned.
-![Triangles](Images/accumulatedFrameCpp.png)
+![Triangles](Images/accumulatedFrameCpp.png "hello")
+"Triangles rendered with AO by hello application"
 ### Geometry
 The src directory name for this collection of examples is actually objects. Geometries are objects but so are lights and other OSPRay "things". 
 #### Spheres
-This example creates a set of 8 spheres arranged in a cube pattern. Each sphere can have a different radius or the same radius depending on how the src lines are commented out. See comments in the code. The rendered image is pretty pedestrian. There is no shading, only ambient light, white spheres on a black background. 
+This example creates a set of 8 spheres arranged in a cube pattern. Each sphere can have a different radius or the same radius depending on how the src lines are commented out. See comments in the code. The rendered image is pretty pedestrian. There is no shading, only ambient light, white spheres on a gray background. 
+![Spheres](Images/accumulatedSphereFrameCpp.png "Spheres")
+"Eight spheres, ambient light, default colors, light gray background"
