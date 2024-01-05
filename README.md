@@ -14,7 +14,9 @@ After the geometries have been explored I move on to volumes and experiment with
 techniques used in the basic experiments to see what kind of visualizations I can produce with OSPRay.  
 
 The repo has a src directory that contains all the code. The organization of src
-sort of follows the API documentation. Each subdirectory of src contains code related to the subsection fo the API documentation,... almost. The organization of this readme follows that of the source directory. Subsections of this doc contain notes about the code in the corresponding source directoy. The code itself contains more detailed comments.  
+sort of follows the API documentation. Each subdirectory of src contains code related to the subsection fo the API documentation,... almost. The organization of this readme follows that of the source directory. Subsections of this doc contain notes about the code in the corresponding source directoy. The code itself contains more detailed comments. 
+
+>The OSPRay source repository contains a wealth of information about how the API can be used. In particular the ospExamples application is particularly useful for experimenting with OSPRay. The code in ospray/apps/common/ospray_testing/builders contains examples of how to instantiate various OSPRay objects, apply materials, light scenes and exercise several other API features. I drew heavily from that source in working my examples. 
 
 ## Experiments
 All the code is C++. I lean on the header provided by the OSPRay developers. So the following includes are found in each application. 
