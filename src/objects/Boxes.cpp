@@ -30,7 +30,7 @@ int main(int argc, const char** argv) {
     imgSize.y = 768; // height
 
     // camera
-    vec3f cam_pos{0.f, 0.f, 10.f};
+    vec3f cam_pos{1.f, 0.f, 7.f};
     vec3f cam_up{0.f, 1.f, 0.f};
     vec3f cam_view{0.0f, 0.f, -1.f};
     box3f box(vec3f{0.f,0.f,0.f},vec3f{0.2f,0.2f,0.2f});
