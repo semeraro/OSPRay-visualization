@@ -108,7 +108,7 @@ int main(int argc, const char** argv) {
         ospray::cpp::GeometricModel model(Spheres);
         ospray::cpp::Material objmat("scivis","obj");
         objmat.setParam("kd",vec3f(rlm71));
-        objmat.setParam("ks",vec3f(0.8f));
+        objmat.setParam("ks",vec3f(0.2f));
         //objmat.setParam("d",0.5f);
         objmat.commit();
         //model.setParam("color",rlm71);
@@ -129,7 +129,7 @@ int main(int argc, const char** argv) {
         world.setParam("instance", ospray::cpp::CopiedData(instance));
         // create and setup light(s). No light no image. 
         std::vector<ospray::cpp::Light> mylights;
-        ospray::cpp::Light aolight("ao");
+        ospray::cpp::Light aolight("ambient");
         aolight.commit();
         ospray::cpp::Light light("distant");
         // set light direction to shine down the negative z axis. 
@@ -149,7 +149,7 @@ int main(int argc, const char** argv) {
         vec3f lightgray{0.1f,0.1f,0.1f};
         renderer.setParam("backgroundColor", lightgray);
         renderer.setParam("aoSamples",8); 
-        renderer.setParam("pixelSamples",64); // 
+        renderer.setParam("pixelSamples",8); // 
         renderer.commit();
 
         // create and setup framebuffer
