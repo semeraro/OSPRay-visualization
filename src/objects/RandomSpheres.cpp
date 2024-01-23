@@ -104,12 +104,18 @@ int main(int argc, const char** argv) {
         Spheres.commit();
 
         // put the spheres into a model
-        // set the color here.
         ospray::cpp::GeometricModel model(Spheres);
         ospray::cpp::Material objmat("scivis","obj");
+        // diffuse color
         objmat.setParam("kd",vec3f(rlm71));
+        // spectral color
         objmat.setParam("ks",vec3f(0.2f));
+        // phong exponent, shiny
+        objmat.setParam("ns",10.f);
+        // opacity
         //objmat.setParam("d",0.5f);
+        // transparency filter color
+        //objmat.setParam("tf",vec3f(0.8f,0.1f,0.5f));
         objmat.commit();
         //model.setParam("color",rlm71);
         model.setParam("material",objmat);
@@ -139,16 +145,16 @@ int main(int argc, const char** argv) {
         mylights.push_back(light);
         world.setParam("light", ospray::cpp::CopiedData(mylights));
         world.commit();
-
-         // create renderer, choose Scientific Visualization renderer
-        ospray::cpp::Renderer renderer("scivis");
-
+        // create renderer, choose Scientific Visualization renderer
+        //ospray::cpp::Renderer renderer("scivis");
+        // or path tracer
+        ospray::cpp::Renderer renderer("pathtracer");
         // complete setup of renderer, place setParam calls here
         // to change rendering.
         // Change the background color as an example. Spec rgb as vec3f.
         vec3f lightgray{0.1f,0.1f,0.1f};
         renderer.setParam("backgroundColor", lightgray);
-        renderer.setParam("aoSamples",8); 
+        renderer.setParam("aoSamples",0); 
         renderer.setParam("pixelSamples",8); // 
         renderer.commit();
 
