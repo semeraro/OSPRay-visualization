@@ -42,7 +42,9 @@ int main(int argc, const char** argv) {
     std::mt19937 gen(0);
     // randomly assign position
     rkcommon::utility::uniform_real_distribution<float> sphere_position(-1.f,1.f);
-
+    // control strings
+    std::string rendererType{"pathtracer"};
+    std::string materialType{"metal"};
     // sphere data
     // static number of spheres
     int numspheres = 20;
@@ -64,6 +66,23 @@ int main(int argc, const char** argv) {
     }
     // color for the spheres
     vec4f rlm71{0.345f,0.341f,0.263f,1.0f};
+    vec3f lower{-2.f,-2.f,-2.f}; // the "lower" corner of the box
+    vec3f upper{2.f,2.f,2.f};    // the opposite corner of the box
+    const box3f bounding_box(lower,upper);
+    // make three planes that intersect at the origin
+    // each plane orthogonal to one coordinate axis.
+    // a vector to hold the coefficients of three planes
+    std::vector<vec4f> coefs;
+    std::vector<box3f> bboxes;
+    // plane orthogonal to the x direction through origin
+    coefs.push_back(vec4f(1.f,0.f,0.f,-1.f));
+    bboxes.push_back(bounding_box);
+    // plane orthogonal to the y direction through origin
+    coefs.push_back(vec4f(0.f,1.f,0.f,-1.f));
+    bboxes.push_back(bounding_box);
+    // plane orthogonal to the z direction through origin
+    coefs.push_back(vec4f(0.f,0.f,1.f,-1.f));
+    bboxes.push_back(bounding_box);
 #ifdef _WIN32
     bool waitForKey = false;
     CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -88,7 +107,22 @@ int main(int argc, const char** argv) {
         camera.setParam("direction", cam_view);
         camera.setParam("up", cam_up);
         camera.commit(); // commit each object to indicate modifications are done
-
+        ospray::cpp::Material objmat("pathtracer","obj");
+        // diffuse color
+        objmat.setParam("kd",vec3f(rlm71));
+        // spectral color
+        objmat.setParam("ks",vec3f(0.2f));
+        // phong exponent, shiny
+        objmat.setParam("ns",10.f);
+        objmat.commit();
+        // make a plane geometry
+        ospray::cpp::Geometry planes("plane");
+        planes.setParam("plane.coefficients", ospray::cpp::CopiedData(coefs));
+        planes.setParam("plane.bounds", ospray::cpp::CopiedData(bboxes));
+        planes.commit();
+        // planes model
+        ospray::cpp::GeometricModel planemodel(planes);
+        planemodel.commit();
         // create and setup model and shperes
         // create a geometry object to contain the spheres. As yet no sphere count.
         ospray::cpp::Geometry Spheres("sphere");
@@ -105,23 +139,27 @@ int main(int argc, const char** argv) {
 
         // put the spheres into a model
         ospray::cpp::GeometricModel model(Spheres);
-        ospray::cpp::Material mat("pathtracer","metal");
+        ospray::cpp::Material mat(rendererType,materialType);
         // set k and eta for the metal
         vec3f goldk{3.7f, 2.3f, 1.7f};
         vec3f goldeta{0.07f, 0.37f, 1.5f};
         // set the roughness
         float roughness = 0.1; // mirror
-        //mat.setParam("k",goldk);
-        //mat.setParam("eta",goldeta);
-        //mat.setParam("roughness",roughness);
-        //mat.commit();
+        mat.setParam("k",goldk);
+        mat.setParam("eta",goldeta);
+        mat.setParam("roughness",roughness);
+        mat.commit();
         //model.setParam("color",rlm71);
         model.setParam("material",mat);
+        planemodel.setParam("material",objmat);
+        planemodel.commit();
         model.commit();
-
+        std::vector<ospray::cpp::GeometricModel> models;
+        models.push_back(model);
+        models.push_back(planemodel);
         // put the model into a group (collection of models)
         ospray::cpp::Group group;
-        group.setParam("geometry", ospray::cpp::CopiedData(model));
+        group.setParam("geometry", ospray::cpp::CopiedData(models));
         group.commit();
 
         // put the group into an instance (give the group a world transform)
@@ -131,16 +169,24 @@ int main(int argc, const char** argv) {
         // put the instance in the world
         ospray::cpp::World world;
         world.setParam("instance", ospray::cpp::CopiedData(instance));
+        std::vector<ospray::cpp::Light> mylights;
+        ospray::cpp::Light aolight("ambient");
+        // adjust the ambient light 
+        aolight.setParam("intensity",0.0f);
+        aolight.setParam("intensityQuantity",OSP_INTENSITY_QUANTITY_RADIANCE);
+        aolight.commit();
         ospray::cpp::Light light("distant");
         // set light direction to shine down the negative z axis. 
         light.setParam("direction",vec3f(-1.f,-1.f,-1.f));
         light.commit();
-        world.setParam("light", ospray::cpp::CopiedData(light));
+        mylights.push_back(aolight);
+        mylights.push_back(light);
+        world.setParam("light", ospray::cpp::CopiedData(mylights));
         world.commit();
         // create renderer, choose Scientific Visualization renderer
         //ospray::cpp::Renderer renderer("scivis");
         // or path tracer
-        ospray::cpp::Renderer renderer("pathtracer");
+        ospray::cpp::Renderer renderer(rendererType);
         // complete setup of renderer, place setParam calls here
         // to change rendering.
         // Change the background color as an example. Spec rgb as vec3f.
