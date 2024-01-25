@@ -105,7 +105,7 @@ int main(int argc, const char** argv) {
 
         // put the spheres into a model
         ospray::cpp::GeometricModel model(Spheres);
-        ospray::cpp::Material objmat("scivis","obj");
+        ospray::cpp::Material objmat("pathtracer","obj");
         // diffuse color
         objmat.setParam("kd",vec3f(rlm71));
         // spectral color
@@ -141,7 +141,7 @@ int main(int argc, const char** argv) {
         // set light direction to shine down the negative z axis. 
         light.setParam("direction",vec3f(-1.f,-1.f,-1.f));
         light.commit();
-        mylights.push_back(aolight);
+        //mylights.push_back(aolight);
         mylights.push_back(light);
         world.setParam("light", ospray::cpp::CopiedData(mylights));
         world.commit();
@@ -153,7 +153,8 @@ int main(int argc, const char** argv) {
         // to change rendering.
         // Change the background color as an example. Spec rgb as vec3f.
         vec3f lightgray{0.1f,0.1f,0.1f};
-        renderer.setParam("backgroundColor", lightgray);
+        vec3f black{0.f,0.f,0.f};
+        renderer.setParam("backgroundColor", black);
         renderer.setParam("aoSamples",0); 
         renderer.setParam("pixelSamples",8); // 
         renderer.commit();
