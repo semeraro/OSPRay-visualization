@@ -1,0 +1,15 @@
+# cmake for Spheres ospray application
+cmake_policy(SET CMP0074 NEW)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard to use")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#if(MSVC)
+# this is only needed when building a library on windows. I think. 
+#   message(" doing shared library foo")
+#    set(BUILD_SHARED_LIBS TRUE)
+#    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+#endif(MSVC)
+add_executable(METAL ${CMAKE_CURRENT_SOURCE_DIR}/metal.cpp)
+target_link_libraries(METAL ospray::ospray rkcommon::rkcommon)
