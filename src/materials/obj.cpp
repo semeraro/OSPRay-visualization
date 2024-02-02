@@ -67,7 +67,9 @@ int main(int argc, const char** argv) {
         r = radius;
     }
     // color for the spheres
-    vec4f rlm71{0.345f,0.341f,0.263f,1.0f};
+    vec4f rlm71{0.325f,0.345f,0.258f,1.0f};
+    vec4f rlm65{0.631f,0.773f,0.819f,1.0f};
+    vec4f rlm02{0.498f,0.482f,0.419f,1.0f};
     vec3f lower{-2.f,-2.f,-2.f}; // the "lower" corner of the box
     vec3f upper{2.f,2.f,2.f};    // the opposite corner of the box
     const box3f bounding_box(lower,upper);
@@ -111,7 +113,7 @@ int main(int argc, const char** argv) {
         camera.commit(); // commit each object to indicate modifications are done
         ospray::cpp::Material objmat("pathtracer","obj");
         // diffuse color
-        objmat.setParam("kd",vec3f(rlm71));
+        objmat.setParam("kd",vec3f(rlm65));
         // spectral color
         objmat.setParam("ks",vec3f(0.2f));
         // phong exponent, shiny
@@ -153,7 +155,7 @@ int main(int argc, const char** argv) {
             vec3f color{0.0f,0.f,1.f};
             mat.setParam("color",color);
         }else if(materialType.compare("obj")==0) {
-            mat.setParam("kd",vec3f(rlm71));
+            mat.setParam("kd",vec3f(rlm02));
             mat.setParam("ks",vec3f(0.2f));
             mat.setParam("ns",10.f);
         }
