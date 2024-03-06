@@ -38,3 +38,15 @@ build/
 Makefile
 CMakeCache.txt
 *.swp
+DATA/lte-orb/geometry.pbrt
+DATA/lte-orb/lte-orb-roughglass.pbrt
+DATA/lte-orb/lte-orb-silver.pbrt
+DATA/lte-orb/README.md
+DATA/lte-orb/TestObj.blend
+DATA/lte-orb/TestObjPoly.blend
+DATA/lte-orb/bsdfs/roughglass_alpha_0.2.bsdf
+DATA/lte-orb/spds/Ag.eta.spd
+DATA/lte-orb/spds/Ag.k.spd
+DATA/lte-orb/spds/Au.eta.spd
+DATA/lte-orb/spds/Au.k.spd
+DATA/lte-orb/textures/Checker.png
