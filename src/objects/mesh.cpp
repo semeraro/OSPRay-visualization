@@ -34,6 +34,8 @@ int main(int argc, const char** argv) {
     std::vector<vec3f> normal;
     std::vector<vec3ui> index;
     std::vector<vec2f> texcoords;
+    //std::vector<vec3uc> texdata;
+    std::vector<vec3f> texdata;
     float x,y,z;
     // insert vertices
     for(int j=0;j<J;j++) 
@@ -41,6 +43,7 @@ int main(int argc, const char** argv) {
             x = 0.0f+i*dx;
             y = 0.0f+j*dy;
             z = 0.0;
+            std::cout << x << " " << y << std::endl;
             vertex.emplace_back(x,y,z); // vertex coords
             normal.emplace_back(0.f,0.f,-1.f); // normal at vertex
             texcoords.emplace_back(x,y); // texture coordinates
@@ -77,6 +80,48 @@ int main(int argc, const char** argv) {
     if (init_error != OSP_NO_ERROR)
         return init_error;
     {
+        // create a texture
+        // set up backplate texture
+  std::vector<vec4f> backplate;
+  backplate.push_back(vec4f(0.8f, 0.2f, 0.2f, 1.0f));
+  backplate.push_back(vec4f(0.2f, 0.8f, 0.2f, 1.0f));
+  backplate.push_back(vec4f(0.2f, 0.2f, 0.8f, 1.0f));
+  backplate.push_back(vec4f(0.4f, 0.2f, 0.4f, 1.0f));
+        ospray::cpp::Texture mytexture("texture2d");
+        ospray::cpp::Texture backplateTex("texture2d");
+        OSPTextureFormat bptexFmt = OSP_TEXTURE_RGBA32F;
+        backplateTex.setParam(
+      "data", ospray::cpp::CopiedData(backplate.data(), vec2ul(2, 2)));
+      backplateTex.setParam("format", OSP_INT, &bptexFmt);
+      backplateTex.commit();
+        //mytexture.setParam("format",OSP_TEXTURE_RGB8);
+        // make a checkerboard texture pattern
+        // rgb8 pattern either black or white.
+        //u_char black = 0;
+        //u_char white = 254;
+        // rgb32f format 
+        float black = 0.f;
+        float white = 0.8f;
+        for(int j=0;j<J;j++)
+            for(int i=0;i<I;i++) {
+                int tindex = i+j*I;
+                //u_char tcolor = tindex % 2 ? black : white;
+                float tcolor = tindex < 50 ? black : white;
+                texdata.emplace_back(tcolor,tcolor,tcolor);
+                std::cout << tindex << " " << tcolor << std::endl;
+            }
+        //mytexture.setParam("data",ospray::cpp::CopiedData(texdata));
+        mytexture.setParam("data",ospray::cpp::CopiedData(texdata.data(),vec2ul(10,10)));
+        //mytexture.setParam("format",OSP_TEXTURE_RGB8);
+        OSPTextureFormat texFmt = OSP_TEXTURE_RGB32F;
+        mytexture.setParam("format",OSP_INT,&texFmt);
+        //mytexture.setParam("format",OSP_TEXTURE_RGB32F);
+        mytexture.commit();
+        // now a material to use the texture
+        ospray::cpp::Material objmat("pathtracer","obj");
+        objmat.setParam("map_kd",mytexture);
+        //objmat.setParam("map_kd",backplateTex);
+        objmat.commit();
         // create and setup model and mesh
         // first the mesh
         ospray::cpp::Geometry mesh("mesh");
@@ -87,6 +132,7 @@ int main(int argc, const char** argv) {
         mesh.commit();
         // geometric model
         ospray::cpp::GeometricModel geomodel(mesh);
+        geomodel.setParam("material",objmat);
         geomodel.commit();
         // group
         ospray::cpp::Group meshgroup;
@@ -118,7 +164,7 @@ int main(int argc, const char** argv) {
         ospray::cpp::Renderer renderer("scivis");
         // complete setup of renderer
         renderer.setParam("aoSamples", 1);
-        renderer.setParam("backgroundColor", 0.5f); // white, transparent
+        renderer.setParam("backgroundColor", 0.1f); // white, transparent
         renderer.commit();
         //
         ospray::cpp::FrameBuffer framebuffer(
