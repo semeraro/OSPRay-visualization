@@ -81,41 +81,38 @@ int main(int argc, const char** argv) {
         return init_error;
     {
         // create a texture
-        // set up backplate texture
-  std::vector<vec4f> backplate;
-  backplate.push_back(vec4f(0.8f, 0.2f, 0.2f, 1.0f));
-  backplate.push_back(vec4f(0.2f, 0.8f, 0.2f, 1.0f));
-  backplate.push_back(vec4f(0.2f, 0.2f, 0.8f, 1.0f));
-  backplate.push_back(vec4f(0.4f, 0.2f, 0.4f, 1.0f));
         ospray::cpp::Texture mytexture("texture2d");
-        ospray::cpp::Texture backplateTex("texture2d");
-        OSPTextureFormat bptexFmt = OSP_TEXTURE_RGBA32F;
-        backplateTex.setParam(
-      "data", ospray::cpp::CopiedData(backplate.data(), vec2ul(2, 2)));
-      backplateTex.setParam("format", OSP_INT, &bptexFmt);
-      backplateTex.commit();
-        //mytexture.setParam("format",OSP_TEXTURE_RGB8);
         // make a checkerboard texture pattern
-        // rgb8 pattern either black or white.
-        //u_char black = 0;
-        //u_char white = 254;
+        // use N x M tiles with 10 pixels per tile
         // rgb32f format 
+        // 10N x 10M pixel image
+        int N = 8;
+        int M = 8;
+        int numpixels = N*M*100;
         float black = 0.f;
         float white = 0.8f;
-        for(int j=0;j<J;j++)
-            for(int i=0;i<I;i++) {
-                int tindex = i+j*I;
-                //u_char tcolor = tindex % 2 ? black : white;
-                float tcolor = tindex < 50 ? black : white;
-                texdata.emplace_back(tcolor,tcolor,tcolor);
-                std::cout << tindex << " " << tcolor << std::endl;
+        // set all the pixels to black
+        texdata.assign(numpixels,vec3f(black,black,black));
+        // set select pixels white
+        // a vector of white pixels
+        for(int j=0;j<M;j++)
+            for(int i=0;i<N;i++) {
+                int blockindex = i + j*N;
+                if ( !((i%2)^(j%2))) {
+                    // write a block's worth of white pixels
+                    int jstart = j*10;
+                    int istart = i*10;
+                    for (int jj=jstart;jj<jstart+10;jj++)
+                        for (int ii=istart;ii<istart+10;ii++) {
+                            int index = ii + jj*N*10;
+                            texdata[index] = vec3f(white,white,white);
+                        }
+                }
             }
-        //mytexture.setParam("data",ospray::cpp::CopiedData(texdata));
-        mytexture.setParam("data",ospray::cpp::CopiedData(texdata.data(),vec2ul(10,10)));
-        //mytexture.setParam("format",OSP_TEXTURE_RGB8);
+        // load the texture
+        mytexture.setParam("data",ospray::cpp::CopiedData(texdata.data(),vec2ul((N*10),(M*10))));
         OSPTextureFormat texFmt = OSP_TEXTURE_RGB32F;
         mytexture.setParam("format",OSP_INT,&texFmt);
-        //mytexture.setParam("format",OSP_TEXTURE_RGB32F);
         mytexture.commit();
         // now a material to use the texture
         ospray::cpp::Material objmat("pathtracer","obj");
