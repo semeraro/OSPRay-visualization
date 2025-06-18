@@ -64,7 +64,7 @@ int main(int argc, const char** argv) {
     Vol.setParam("dimensions",dimensions);
     vec3f origin(-0.5f,-0.5f,-0.5f);
     vec3f spacing(vec3f(1.0f,1.0f,1.0f)/(dimensions -1));
-    std::cout << origin << " " << spacing << std::endl;
+    std::cout << "origin: " << origin << " spacing " << spacing << std::endl;
     Vol.setParam("gridOrigin",origin);
     Vol.setParam("gridSpacing",spacing);
     Vol.commit();
@@ -79,15 +79,15 @@ int main(int argc, const char** argv) {
 
     // transfer function
     ospray::cpp::TransferFunction tf("piecewiseLinear");
-    std::vector<vec3f> colors{
+    std::vector<vec3f> colors = {
         vec3f(0.0f,0.0f,0.0f),
         vec3f(1.0f,1.0f,1.0f)
     };
-    std::vector<float> opacity{0.0f,1.0f};
-    range1f values(0.0f,11.0f);
+    std::vector<float> opacity = {0.0f,1.0f};
+    range1f valueRange = range1f(0.0f,11.0f);
     tf.setParam("color",ospray::cpp::CopiedData(colors));
-    tf.setParam("opacity",ospray::cpp::CopiedData(opacity));
-    tf.setParam("value",values);
+    tf.setParam("opacity",ospray::cpp::SharedData(opacity));
+    tf.setParam("value",valueRange);
     tf.commit();
     // model
     ospray::cpp::VolumetricModel volmod(Vol);
@@ -96,7 +96,7 @@ int main(int argc, const char** argv) {
     volmod.commit();
     // put the model into a group (collection of models)
         ospray::cpp::Group group;
-        group.setParam("volume", ospray::cpp::CopiedData(volmod));
+        group.setParam("volume", ospray::cpp::SharedData(volmod));
         //group.setParam("geometry",ospray::cpp::CopiedData(domainmodel));
         group.commit();
 
@@ -108,7 +108,7 @@ int main(int argc, const char** argv) {
         // put the instance in the world
         ospray::cpp::World world;
         //world.setParam("light", ospray::cpp::CopiedData(aolight));
-        world.setParam("instance", ospray::cpp::CopiedData(instance));
+        world.setParam("instance", ospray::cpp::SharedData(instance));
         world.commit();
      // create renderer, choose Scientific Visualization renderer
         ospray::cpp::Renderer renderer("scivis");
@@ -136,6 +136,7 @@ int main(int argc, const char** argv) {
         // render 10 more frames, which are accumulated to result in a better
         // converged image
         for (int frames = 0; frames < 10; frames++)
+          std::cout << "frame " << frames << std::endl;
           framebuffer.renderFrame(renderer, camera, world);
 
         fb = (uint32_t *)framebuffer.map(OSP_FB_COLOR);
@@ -144,7 +145,6 @@ int main(int argc, const char** argv) {
         framebuffer.unmap(fb);
         std::cout << "rendering 10 accumulated frames to accumulatedvolumerender.ppm"
                   << std::endl;
-
 }
 // turn off
     ospShutdown();

@@ -34,7 +34,6 @@ int main(int argc, const char** argv) {
     std::vector<vec3f> normal;
     std::vector<vec3ui> index;
     std::vector<vec2f> texcoords;
-    //std::vector<vec3uc> texdata;
     std::vector<vec3f> texdata;
     float x,y,z;
     // insert vertices

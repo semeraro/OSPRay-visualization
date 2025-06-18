@@ -37,6 +37,6 @@ float* spherical_data(vec3i dims,vec3f center, float rmax, float d0) {
                 max = data[index] > max ? data[index] : max;
                 
             }
-    std::cout << vec2f(min,max) << std::endl;        
+    std::cout << "min max: " << vec2f(min,max) << std::endl;        
     return data;            
 }
