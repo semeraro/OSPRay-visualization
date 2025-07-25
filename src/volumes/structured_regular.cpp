@@ -83,9 +83,14 @@ int main(int argc, const char** argv) {
         vec3f(0.0f,0.0f,0.0f),
         vec3f(1.0f,1.0f,1.0f)
     };
+    std::vector<vec3f> coolwarm = {
+        vec3f(0.2314f,0.2980f,0.7529f),
+        vec3f(0.8649f,0.8649f,0.8649f),
+        vec3f(0.7059f,0.0157f,0.1490f)
+    };
     std::vector<float> opacity = {0.0f,1.0f};
     range1f valueRange = range1f(0.0f,11.0f);
-    tf.setParam("color",ospray::cpp::CopiedData(colors));
+    tf.setParam("color",ospray::cpp::SharedData(coolwarm));
     tf.setParam("opacity",ospray::cpp::SharedData(opacity));
     tf.setParam("value",valueRange);
     tf.commit();
